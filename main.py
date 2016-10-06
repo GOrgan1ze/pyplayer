@@ -80,7 +80,6 @@ def play_song(song_data, player, vlc_inst):
     player.set_media(media);
 
     player.play();
-    playing = set([1,2,3,4]); #some strange shit. Just copied :)
 
     time.sleep(1);
  
@@ -90,6 +89,7 @@ def process_playlist():
     global music_list;
     global curplay_idx;
     
+    playing = set([1,2,3,4]); #some strange shit. Just copied :)
     playlist = [ url['url'] for url in music_list]
     limit = len(music_list)
 
@@ -102,6 +102,10 @@ def process_playlist():
         play_song(music_list[curplay_idx], player, vlc_inst);
 
         while True:
+            if player.get_state() not in playing:
+                player.stop();
+                break;
+
             player_state = get_player_state();
             if   player_state == PAUSE:
                 player.pause();
@@ -124,6 +128,7 @@ def process_playlist():
             elif player_state == CHANGED:
                 global PlayListBox;
                 curplay_idx = PlayListBox.curselection()[0] - 1;
+                player.stop();
                 break;
             continue;
         if not repeat_current.get():

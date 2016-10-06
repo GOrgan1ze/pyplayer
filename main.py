@@ -19,6 +19,15 @@ from player_states import *
 from dbg import dbg
 
 
+# some VLC constants
+VLC_CLOSE=0;
+VLC_OPEN =1;
+VLC_PLAY =3;
+VLC_PAUSE=4;
+VLC_STOP =5;
+VLC_ENDED=6;
+VLC_ERROR=7;
+
 appWin = Tk();
 appWin.title('VK pyplayer v0.0.1');
 
@@ -88,8 +97,8 @@ def play_song(song_data, player, vlc_inst):
 def process_playlist():
     global music_list;
     global curplay_idx;
-    
-    playing = set([1,2,3,4]); #some strange shit. Just copied :)
+ 
+    playing = set([VLC_OPEN, VLC_PLAY, VLC_PAUSE]);
     playlist = [ url['url'] for url in music_list]
     limit = len(music_list)
 

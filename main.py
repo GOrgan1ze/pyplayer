@@ -109,6 +109,7 @@ def process_playlist():
     while (curplay_idx < limit and \
         get_player_state() != STOP):
 
+        dbg('current idx : ' + str(curplay_idx));
         set_player_state(ACTIVE);
 
         play_song(music_list[curplay_idx], player, vlc_inst);
@@ -131,7 +132,6 @@ def process_playlist():
                 set_player_state(ACTIVE);
                 player.play();
             elif player_state == NEXT:
-                dbg('player stopped : NEXT');
                 break;
             elif player_state == PREV:
                 if not repeat_current.get():
@@ -140,6 +140,8 @@ def process_playlist():
             elif player_state == CHANGED:
                 global PlayListBox;
                 curplay_idx = PlayListBox.curselection()[0] - 1;
+                if repeat_current.get():
+                    curplay_idx += 1;
                 break;
             continue;
 

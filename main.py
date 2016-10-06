@@ -40,6 +40,25 @@ user     = '';
 password = '';
 curplay_idx = 0;
 
+def get_credentials(in_user, in_pwd):
+    #check default
+    dbg('Default credentials are used');
+    user, password = get_def_user_password_pair();
+
+    if in_user == '' or in_pwd == '':
+        return user, password;
+
+    if user == '' or password == '':
+        return in_user, in_pwd;
+
+    if in_user != user and in_pwd != password:
+        if save_input_user_password.get():  
+            dbg('Store credentials option was entered');
+            store_user_password_pair(in_user, in_pwd);
+
+    return in_user, in_pwd;
+
+
 def download_song(song_data):
     try:
         urllib.request.urlretrieve(song_data['url'],
@@ -65,34 +84,7 @@ def play_song(song_data, player, vlc_inst):
 
     time.sleep(1);
  
-    while True:
-        state = player.get_state();
-        if (state not in playing) or \
-           (get_player_state() not in ACTIVE_STATES):
-               player.stop();
-               break;
-        if get_player_state() == DOWNLOAD:
-            download_song(song_data);
-        continue;
     return 0;
-
-def get_credentials(in_user, in_pwd):
-    #check default
-    dbg('Default credentials are used');
-    user, password = get_def_user_password_pair();
-
-    if in_user == '' or in_pwd == '':
-        return user, password;
-
-    if user == '' or password == '':
-        return in_user, in_pwd;
-
-    if in_user != user and in_pwd != password:
-        if save_input_user_password.get():  
-            dbg('Store credentials option was entered');
-            store_user_password_pair(in_user, in_pwd);
-
-    return in_user, in_pwd;
 
 def process_playlist():
     global music_list;
@@ -111,16 +103,18 @@ def process_playlist():
 
         while True:
             player_state = get_player_state();
-            if player_state == STOP:
+            if   player_state == PAUSE:
+                player.pause();
+                while (get_player_state() == PAUSE):
+                    continue;
+            elif player_state == DOWNLOAD:
+                download_song(music_list[curplay_idx]);
+            elif player_state == STOP:
                 player.stop();
                 return 0;
             elif player_state == PLAY:
                 set_player_state(ACTIVE);
                 player.play();
-                continue;
-            elif player_state == PAUSE:
-                player.pause();
-                continue;
             elif player_state == NEXT:
                 break;
             elif player_state == PREV:

@@ -106,14 +106,16 @@ def process_playlist():
     vlc_inst = vlc.Instance();
     player = vlc_inst.media_player_new();
 
-    while (curplay_idx < limit):
+    while (curplay_idx < limit and \
+        get_player_state() != STOP):
+
         set_player_state(ACTIVE);
 
         play_song(music_list[curplay_idx], player, vlc_inst);
 
         while True:
             if player.get_state() not in playing:
-                player.stop();
+                dbg('player stopped : played etc');
                 break;
 
             player_state = get_player_state();
@@ -124,12 +126,12 @@ def process_playlist():
             elif player_state == DOWNLOAD:
                 download_song(music_list[curplay_idx]);
             elif player_state == STOP:
-                player.stop();
-                return 0;
+                break;
             elif player_state == PLAY:
                 set_player_state(ACTIVE);
                 player.play();
             elif player_state == NEXT:
+                dbg('player stopped : NEXT');
                 break;
             elif player_state == PREV:
                 if not repeat_current.get():
@@ -138,9 +140,11 @@ def process_playlist():
             elif player_state == CHANGED:
                 global PlayListBox;
                 curplay_idx = PlayListBox.curselection()[0] - 1;
-                player.stop();
                 break;
             continue;
+
+        player.stop();
+        dbg('Player stopped : ' + str(player_state));
         if not repeat_current.get():
             curplay_idx += 1;
     return 1;

@@ -20,13 +20,14 @@ from dbg import dbg
 
 
 # some VLC constants
-VLC_CLOSE=0;
-VLC_OPEN =1;
-VLC_PLAY =3;
-VLC_PAUSE=4;
-VLC_STOP =5;
-VLC_ENDED=6;
-VLC_ERROR=7;
+VLC_CLOSE = 0;
+VLC_OPEN  = 1;
+VLC_BUFF  = 2;
+VLC_PLAY  = 3;
+VLC_PAUSE = 4;
+VLC_STOP  = 5;
+VLC_ENDED = 6;
+VLC_ERROR = 7;
 
 appWin = Tk();
 appWin.title('VK pyplayer v0.0.1');
@@ -37,16 +38,16 @@ appWin.minsize(width=550, height=200);
 appWin.maxsize(width=800, height=800);
 
 save_input_user_password = IntVar();
-owner_comp_list = IntVar();
-repeat_current = IntVar();
+owner_comp_list          = IntVar();
+repeat_current           = IntVar();
 
-search_str = StringVar();
-user_str   = StringVar();
-pwd_str    = StringVar();
+search_str  = StringVar();
+user_str    = StringVar();
+pwd_str     = StringVar();
 playing_str = StringVar();
 
-user     = '';
-password = '';
+user        = '';
+password    = '';
 curplay_idx = 0;
 
 def get_credentials(in_user, in_pwd):

@@ -9,7 +9,7 @@ NEXT     = 5;     #switch to the next song
 PREV     = 6;     #switch to the prev song
 CHANGED  = 7;     #switch to selected song  
 
-ACTIVE_STATES = (ACTIVE, PLAY, STOP, DOWNLOAD);
+ACTIVE_STATES = (ACTIVE, PLAY, PAUSE, DOWNLOAD);
 
 player_state = ACTIVE;
 state_lock = Lock();

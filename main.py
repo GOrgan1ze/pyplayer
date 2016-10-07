@@ -99,7 +99,7 @@ def process_playlist():
     global music_list;
     global curplay_idx;
  
-    playing = set([VLC_OPEN, VLC_PLAY, VLC_PAUSE]);
+    playing = set([VLC_OPEN, VLC_PLAY, VLC_BUFF, VLC_PAUSE]);
     playlist = [ url['url'] for url in music_list]
     limit = len(music_list)
 

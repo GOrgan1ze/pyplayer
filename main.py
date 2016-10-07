@@ -69,12 +69,14 @@ def get_credentials(in_user, in_pwd):
     return in_user, in_pwd;
 
 
-def download_song(song_data):
+def download_song(song_data): 
+    destination = song_data['artist'].replace("/", "\\") + '-' + song_data['title'].replace("/", "\\") + '.mp3'
     try:
-        urllib.request.urlretrieve(song_data['url'],
-                song_data['artist'] + '-' + song_data['title'] + '.mp3');
+        urllib.request.urlretrieve(song_data['url'], destination);
     except: pass;
     set_player_state(ACTIVE);
+    
+
     
 
 def play_song(song_data, player, vlc_inst):

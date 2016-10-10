@@ -125,7 +125,8 @@ def process_playlist():
             elif player_state == DOWNLOAD:
                 download_song(music_list[curplay_idx]);
             elif player_state == STOP:
-                break;
+                player.stop();
+                return 1;
             elif player_state == PLAY:
                 set_player_state(ACTIVE);
                 player.play();
@@ -143,24 +144,31 @@ def process_playlist():
                 break;
             continue;
 
-        player.stop();
         dbg('Player stopped : ' + str(player_state));
         if not repeat_current.get():
             curplay_idx += 1;
+ 
+        player.stop();
+
+    dbg('Leaving play process thread');
     return 1;
 
 PlayListBox = None;
 music_list = None;
+proc_playlist_inst = None;
 
 def vk_music_main(a=None):
     global PlayListBox;
     global music_list;
     global curplay_idx;
-    curplay_idx = 0;
+    global proc_playlist_inst;
 
-    if get_player_state() == ACTIVE:
+    if get_player_state() != STOP:
         set_player_state(STOP);
         time.sleep(1);
+        if proc_playlist_inst:
+            proc_playlist_inst.join();
+
     set_player_state(ACTIVE); 
     #get Credentials window
     user = user_str.get();
@@ -201,9 +209,9 @@ def vk_music_main(a=None):
                 music_list[i]['artist'] + ' - ' + music_list[i]['title'] + '  ' + 
                 str(datetime.timedelta(seconds=music_list[i]['duration'])));
 
-
-    Process = threading.Thread(target=process_playlist);
-    Process.start();
+    curplay_idx = 0;
+    proc_playlist_inst = threading.Thread(target=process_playlist);
+    proc_playlist_inst.start();
 
 ###############################################################################
 ############ UI related data #########################

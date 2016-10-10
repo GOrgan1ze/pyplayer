@@ -48,7 +48,6 @@ playing_str = StringVar();
 
 user        = '';
 password    = '';
-curplay_idx = 0;
 
 def get_credentials(in_user, in_pwd):
     #check default
@@ -93,10 +92,11 @@ def play_song(song_data, player, vlc_inst):
  
     return 0;
 
-def process_playlist():
-    global music_list;
-    global curplay_idx;
- 
+PlayListBox = None;
+
+def process_playlist(curplay_idx, music_list):
+    global PlayListBox;
+
     playing = set([VLC_OPEN, VLC_PLAY, VLC_BUFF, VLC_PAUSE]);
     playlist = [ url['url'] for url in music_list]
     limit = len(music_list)
@@ -110,6 +110,7 @@ def process_playlist():
         dbg('current idx : ' + str(curplay_idx));
         set_player_state(ACTIVE);
 
+        PlayListBox.activate(curplay_idx);
         play_song(music_list[curplay_idx], player, vlc_inst);
 
         while True:
@@ -153,14 +154,10 @@ def process_playlist():
     dbg('Leaving play process thread');
     return 1;
 
-PlayListBox = None;
-music_list = None;
 proc_playlist_inst = None;
 
 def vk_music_main(a=None):
     global PlayListBox;
-    global music_list;
-    global curplay_idx;
     global proc_playlist_inst;
 
     if get_player_state() != STOP:
@@ -210,7 +207,7 @@ def vk_music_main(a=None):
                 str(datetime.timedelta(seconds=music_list[i]['duration'])));
 
     curplay_idx = 0;
-    proc_playlist_inst = threading.Thread(target=process_playlist);
+    proc_playlist_inst = threading.Thread(target=process_playlist, args=(curplay_idx, music_list));
     proc_playlist_inst.start();
 
 ###############################################################################

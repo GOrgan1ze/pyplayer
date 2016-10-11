@@ -177,9 +177,13 @@ def vk_music_main(a=None):
         return 0;
 
     #get access_token to use VK API
-    access_token, my_id = get_token(user, password);
-    if access_token == 0:
-        return 0;
+    try:
+        access_token, my_id = get_token(user, password);
+        if access_token == 0:
+            return 0;
+    except:
+        dbg('Can`t receive access token.');
+        return -1;
 
 
     session = vk.Session()

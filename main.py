@@ -35,11 +35,12 @@ appWin.title('VK pyplayer v0.0.1');
 # disable resizing by user
 appWin.resizable(width=False,height=False);
 appWin.minsize(width=550, height=200);
-appWin.maxsize(width=800, height=800);
+appWin.maxsize(width=850, height=800);
 
 save_input_user_password = IntVar();
 owner_comp_list          = IntVar();
 repeat_current           = IntVar();
+volume_var               = IntVar();
 
 search_str  = StringVar();
 user_str    = StringVar();
@@ -114,6 +115,7 @@ def process_playlist(curplay_idx, music_list):
         play_song(music_list[curplay_idx], player, vlc_inst);
 
         while True:
+            player.audio_set_volume(volume_var.get());
             if player.get_state() not in playing:
                 dbg('player stopped : played etc');
                 break;
@@ -196,9 +198,9 @@ def vk_music_main(a=None):
      
     if not PlayListBox:
         PlayListBox = Listbox(appWin, selectmode=SINGLE, width=90, height=25);
-        PlayListBox.grid(row=5, column=0,columnspan=5);
+        PlayListBox.grid(row=5, column=0,columnspan=6);
         yscroll = Scrollbar(command=PlayListBox.yview, orient=VERTICAL);
-        yscroll.grid(row=5, column=5);
+        yscroll.grid(row=5, column=6);
         PlayListBox.configure(yscrollcommand=yscroll.set);
         PlayListBox.bind('<Double-Button-1>', play_selected);
     PlayListBox.delete(0, PlayListBox.size());
@@ -211,8 +213,14 @@ def vk_music_main(a=None):
                 str(datetime.timedelta(seconds=music_list[i]['duration'])));
 
     curplay_idx = 0;
+    volume_var.set(100);
     proc_playlist_inst = threading.Thread(target=process_playlist, args=(curplay_idx, music_list));
     proc_playlist_inst.start();
+
+def volume_change(event):
+    # change volume stub
+    global volume;
+    volume = volume_var.get();
 
 ###############################################################################
 ############ UI related data #########################
@@ -285,7 +293,7 @@ search_entry.grid(row= 2, column=1);
 playing_label = Label(appWin, text='Now playing :');
 playing_label.grid(row=6, column=0);
 playing_entry = Entry(appWin, bd=4, textvariable=playing_str, width=80);
-playing_entry.grid(row=6, column=1, columnspan=4);
+playing_entry.grid(row=6, column=1, columnspan=5);
 
 # Buttons creation
 start_button = Button(appWin, command=vk_music_main, text='Start'); 
@@ -304,6 +312,11 @@ pause_button.grid(row=3, column=3);
 prev_button.grid(row=3, column=4);
 next_button.grid(row=3, column=5);
 download_button.grid(row=4, column=0);
+
+#volume scale
+volume_slider = Scale(appWin, variable=volume_var, command=volume_change,
+                      from_=100, to=0, orient=VERTICAL, length=100);
+volume_slider.grid(row=3, column=6, rowspan=2);
 
 # Tkinter mainloop :)
 appWin.mainloop();

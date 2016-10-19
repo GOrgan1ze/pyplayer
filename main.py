@@ -76,10 +76,9 @@ def download_song(song_data):
     set_player_state(ACTIVE);
     
 def play_song(song_data, player, vlc_inst):
-    global playing_str;
     try:
-        playing_str.set(song_data['artist'] + ' - ' + song_data['title']);
         media = vlc_inst.media_new(song_data['url']);
+        playing_str.set(song_data['artist'] + ' - ' + song_data['title']);
     except Exception as e:
         dbg('Exception : ', e);
         return -1;
@@ -101,6 +100,7 @@ def process_playlist(curplay_idx, music_list):
     playing = set([VLC_OPEN, VLC_PLAY, VLC_BUFF, VLC_PAUSE]);
     playlist = [ url['url'] for url in music_list]
     limit = len(music_list)
+    volume = -1;
 
     vlc_inst = vlc.Instance();
     player = vlc_inst.media_player_new();
@@ -115,9 +115,12 @@ def process_playlist(curplay_idx, music_list):
         play_song(music_list[curplay_idx], player, vlc_inst);
 
         while True:
-            player.audio_set_volume(volume_var.get());
+            if volume != volume_var.get():
+                volume = volume_var.get();
+                player.audio_set_volume(volume);
+
             if player.get_state() not in playing:
-                dbg('player stopped : played etc');
+                dbg('player stopped : not in \'playing\' states');
                 break;
 
             player_state = get_player_state();
@@ -218,9 +221,8 @@ def vk_music_main(a=None):
     proc_playlist_inst.start();
 
 def volume_change(event):
-    # change volume stub
-    global volume;
-    volume = volume_var.get();
+   # change volume stub
+   pass;
 
 ###############################################################################
 ############ UI related data #########################
